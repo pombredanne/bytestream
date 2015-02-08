@@ -107,53 +107,53 @@ def test_can_measure_how_much_available():
 def test_can_find_bytes():
     b = ByteStream()
     b.write(b"abc")
-    found = b.find(97)
+    found = b.until(97)
     assert found == 1
-    found = b.find(98)
+    found = b.until(98)
     assert found == 2
-    found = b.find(99)
+    found = b.until(99)
     assert found == 3
 
 
 def test_cannot_find_byte_not_written():
     b = ByteStream()
     b.write(b"abc")
-    found = b.find(100)
+    found = b.until(100)
     assert found is None
 
 
 def test_cannot_find_anything_if_empty():
     b = ByteStream()
-    found = b.find(97)
+    found = b.until(97)
     assert found is None
 
 
 def test_finding_only_next_matching_byte():
     b = ByteStream()
     b.write(b"abcabc")
-    found = b.find(97)
+    found = b.until(97)
     assert found == 1
-    found = b.find(98)
+    found = b.until(98)
     assert found == 2
-    found = b.find(99)
+    found = b.until(99)
     assert found == 3
 
 
 def test_find_updates_after_read():
     b = ByteStream()
     b.write(b"abcbca")
-    found = b.find(97)
+    found = b.until(97)
     assert found == 1
-    found = b.find(98)
+    found = b.until(98)
     assert found == 2
-    found = b.find(99)
+    found = b.until(99)
     assert found == 3
     b.read(3)
-    found = b.find(97)
+    found = b.until(97)
     assert found == 3
-    found = b.find(98)
+    found = b.until(98)
     assert found == 1
-    found = b.find(99)
+    found = b.until(99)
     assert found == 2
 
 
@@ -163,9 +163,9 @@ def test_can_find_bytes_several_chunks_ahead():
     b.write(b"xxx")
     b.write(b"xxx")
     b.write(b"abc")
-    found = b.find(97)
+    found = b.until(97)
     assert found == 10
-    found = b.find(98)
+    found = b.until(98)
     assert found == 11
-    found = b.find(99)
+    found = b.until(99)
     assert found == 12

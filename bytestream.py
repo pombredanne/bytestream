@@ -48,11 +48,12 @@ class ByteStream(object):
         else:
             return 0
 
-    def find(self, byte):
+    def until(self, byte):
         """ Find the next occurrence of the byte value specified.
 
         :param byte: the numeric value of the byte to search for
-        :return: the position of the next byte with the specified value or None if not found
+        :return: the number of bytes to read until the next byte with
+                 the specified value is consumed or None if not found
         """
         current_chunk = self._current_chunk()
         if current_chunk is None:
@@ -79,6 +80,8 @@ class ByteStream(object):
         :param size: the number of bytes to read
         :return: a memoryview of the bytes read or None if not enough bytes are available
         """
+        if not size:
+            return None
         current_chunk = self._current_chunk()
         if current_chunk is None:
             return None
