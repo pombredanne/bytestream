@@ -48,27 +48,6 @@ class ByteStream(object):
         else:
             return 0
 
-    def until(self, byte):
-        """ Find the next occurrence of the byte value specified.
-
-        :param byte: the numeric value of the byte to search for
-        :return: the number of bytes to read until the next byte with
-                 the specified value is consumed or None if not found
-        """
-        current_chunk = self._current_chunk()
-        if current_chunk is None:
-            return None
-        if self._chunk_pointer < self._last_chunk:
-            self._combine_ahead()
-            current_chunk = self._current_chunk()
-        position = self._byte_pointer
-        length = len(current_chunk)
-        while position < length:
-            if _byte_match(current_chunk, position, byte):
-                return position - self._byte_pointer + 1
-            position += 1
-        return None
-
     def read(self, size):
         """ Read a specified number of bytes from the stream. If this many
         bytes are not available, None is returned and the read pointer is
@@ -105,6 +84,28 @@ class ByteStream(object):
             else:
                 view = None
         return view
+
+    def until(self, byte):
+        """ Find the number of bytes to read until the next occurrence
+        of the byte value specified is consumed. If no such occurrence
+        exists, None is returned.
+
+        :param byte: the numeric value of the byte to search for
+        :return: the number of bytes to read or None if not available
+        """
+        current_chunk = self._current_chunk()
+        if current_chunk is None:
+            return None
+        if self._chunk_pointer < self._last_chunk:
+            self._combine_ahead()
+            current_chunk = self._current_chunk()
+        position = self._byte_pointer
+        length = len(current_chunk)
+        while position < length:
+            if _byte_match(current_chunk, position, byte):
+                return position - self._byte_pointer + 1
+            position += 1
+        return None
 
     def write(self, data):
         """ Append data to the end of the stream.
