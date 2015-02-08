@@ -89,6 +89,14 @@ def test_can_resume_reading_after_nothing_available():
     assert read.tobytes() == b"world"
 
 
+def test_reading_nothing_does_nothing():
+    b = ByteStream()
+    b.write(b"hello")
+    assert b.available() == 5
+    b.read(0)
+    assert b.available() == 5
+
+
 def test_can_measure_how_much_available():
     b = ByteStream()
     assert b.available() == 0
