@@ -37,6 +37,8 @@ class ByteStream(object):
         self._byte_pointer = 0
 
     def available(self):
+        """ Return the number of bytes available to read.
+        """
         if self._chunk_pointer < self._last_chunk:
             return (len(self._current_chunk()) - self._byte_pointer +
                     sum(len(self._chunks[c])
@@ -47,6 +49,11 @@ class ByteStream(object):
             return 0
 
     def find(self, byte):
+        """ Find the next occurrence of the byte value specified.
+
+        :param byte: the numeric value of the byte to search for
+        :return: the position of the next byte with the specified value or None if not found
+        """
         current_chunk = self._current_chunk()
         if current_chunk is None:
             return None
@@ -65,6 +72,9 @@ class ByteStream(object):
         """ Read a specified number of bytes from the stream. If this many
         bytes are not available, None is returned and the read pointer is
         unaffected.
+
+        Note that this method returns a memoryview object which will
+        generally require conversion via the `tobytes` method.
 
         :param size: the number of bytes to read
         :return: a memoryview of the bytes read or None if not enough bytes are available
@@ -104,6 +114,9 @@ class ByteStream(object):
             self._last_chunk = self._num_chunks - 1
 
     def _combine_ahead(self):
+        """ Combine all the chunks ahead of the current pointer position into
+        a single chunk for ease of processing.
+        """
         if self._chunk_pointer < self._last_chunk:
             combined = (self._current_chunk()[self._byte_pointer:].tobytes() +
                         b"".join(self._chunks[c].tobytes()
@@ -114,10 +127,10 @@ class ByteStream(object):
             self._last_chunk = self._num_chunks - 1
             self._chunk_pointer += 1
             self._byte_pointer = 0
-        else:
-            pass
 
     def _current_chunk(self):
+        """ Return the current chunk, if available.
+        """
         try:
             return self._chunks[self._chunk_pointer]
         except IndexError:
